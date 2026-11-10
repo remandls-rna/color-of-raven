@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color of Raven Content & Social Media Tracker - Made by AI (Gemini)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for Analytics Charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    },
+                    colors: {
+                        brown: {
+                            50: '#fdfbf7',
+                            100: '#f7f2e9',
+                            200: '#ece1d1',
+                            300: '#dec9b0',
+                            400: '#cbb08c',
+                            500: '#b1916a',
+                            600: '#94724f',
+                            700: '#75563c',
+                            800: '#5c412e',
+                            900: '#3c291d',
+                            950: '#261810'
+                        },
+                        amberAccent: {
+                            DEFAULT: '#d97706',
+                            hover: '#b45309'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #f7f4ee; color: #261810; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="font-sans min-h-screen flex flex-col justify-between antialiased">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2"></div>
+
+    <!-- TOPBAR HEADER -->
+    <header class="bg-brown-950 text-stone-100 border-b border-brown-900 sticky top-0 z-40 px-4 py-3 shadow-md">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-600 to-amber-400 flex items-center justify-center shadow-md shadow-amber-600/30">
+                    <i class="fa-solid fa-crow text-brown-950 text-xl font-bold"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-base md:text-lg leading-tight tracking-tight text-white flex items-center gap-2">
+                        Color of Raven Tracker & Analytics
+                    </h1>
+                    <p class="text-xs text-amber-200/80 font-medium">Made by AI (Gemini) • Content Workflow & Analytics Hub</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 flex-wrap">
+                <!-- Navigation Tabs -->
+                <div class="bg-brown-900 p-1 rounded-xl flex items-center gap-1 border border-brown-800">
+                    <button id="tab-btn-schedule" onclick="switchTab('schedule')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition bg-amber-600 text-white shadow-sm flex items-center gap-1.5">
+                        <i class="fa-solid fa-calendar-days"></i> Jadwal Konten
+                    </button>
+                    <button id="tab-btn-analytics" onclick="switchTab('analytics')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition text-stone-300 hover:text-white flex items-center gap-1.5">
+                        <i class="fa-solid fa-chart-line"></i> Analytics & Performa
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT WORKSPACE -->
+    <main class="max-w-7xl mx-auto w-full p-4 md:p-6 flex flex-col gap-6 my-2 flex-grow">
+        
+        <!-- ==================== TAB 1: SCHEDULE ==================== -->
+        <div id="tab-schedule" class="flex flex-col gap-6">
+            <!-- H-1 URGENT NOTIFICATION BANNER -->
+            <div id="urgent-banner" class="hidden bg-amber-50 border border-amber-300 rounded-2xl p-4 shadow-sm flex flex-col gap-3">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-extrabold text-amber-900 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-600 animate-pulse"></i> Perhatian: Ada Jadwal Posting H-1 / Hari Ini!
+                    </span>
+                    <span id="urgent-count" class="px-2 py-0.5 bg-amber-600 text-white text-[10px] font-bold rounded-full">0 Item</span>
+                </div>
+                <div id="urgent-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+            </div>
+
+            <!-- STATS & QUICK FILTERS -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="bg-white border border-stone-200/80 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-stone-500 uppercase">Total Jadwal</span>
+                        <h3 id="stat-total" class="text-2xl font-extrabold text-brown-950 mt-1">0</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center text-brown-800">
+                        <i class="fa-solid fa-calendar-days text-lg"></i>
+                    </div>
+                </div>
+                <div class="bg-white border border-stone-200/80 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-stone-500 uppercase">H-1 / Hari Ini</span>
+                        <h3 id="stat-urgent" class="text-2xl font-extrabold text-amber-600 mt-1">0</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600">
+                        <i class="fa-solid fa-bell text-lg"></i>
+                    </div>
+                </div>
+                <div class="bg-white border border-stone-200/80 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-stone-500 uppercase">Uploaded (Selesai)</span>
+                        <h3 id="stat-done" class="text-2xl font-extrabold text-emerald-600 mt-1">0</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                        <i class="fa-solid fa-circle-check text-lg"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENT TABLE SECTION -->
+            <div class="bg-white border border-stone-200/80 rounded-2xl p-5 shadow-sm flex flex-col gap-4">
+                <div class="flex items-center justify-between border-b border-stone-200 pb-3 flex-wrap gap-3">
+                    <h3 class="text-sm font-bold text-brown-900 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-amber-600"></i> Daftar Jadwal & Performa Konten
+                    </h3>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <select id="filter-status" class="bg-stone-50 border border-stone-200 text-xs font-bold text-brown-900 rounded-xl px-3 py-1.5 outline-none focus:border-brown-700">
+                            <option value="all">Semua Status</option>
+                            <option value="shooting + editing">Shooting + Editing</option>
+                            <option value="on draft">On Draft</option>
+                            <option value="uploaded">Uploaded</option>
+                            <option value="urgent">H-1 / Hari Ini</option>
+                        </select>
+                        <button onclick="openAddModal()" class="px-4 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-plus"></i> Tambah Jadwal
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto no-scrollbar">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-stone-200 text-[11px] font-bold text-brown-800 uppercase tracking-wider">
+                                <th class="py-3 px-3">Tanggal & Deadline</th>
+                                <th class="py-3 px-3">Brand & Sosmed</th>
+                                <th class="py-3 px-3">SOW & Detail Konten</th>
+                                <th class="py-3 px-3">Performa (Views/Eng)</th>
+                                <th class="py-3 px-3">Status</th>
+                                <th class="py-3 px-3 text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="content-table-body" class="text-xs text-brown-950 divide-y divide-stone-100"></tbody>
+                    </table>
+                </div>
+                
+                <div id="empty-state" class="hidden py-12 text-center flex flex-col items-center justify-center gap-2">
+                    <i class="fa-solid fa-folder-open text-3xl text-stone-300"></i>
+                    <p class="text-xs text-stone-400 font-semibold">Belum ada jadwal posting konten.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== TAB 2: ANALYTICS ==================== -->
+        <div id="tab-analytics" class="hidden flex flex-col gap-6">
+            <!-- Analytics Toolbar & Action Buttons -->
+            <div class="bg-white border border-stone-200/80 rounded-2xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <h3 class="text-sm font-extrabold text-brown-950 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-chart-pie text-amber-600"></i> Dashboard Performa Konten
+                    </h3>
+                </div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <button onclick="openManualAnalyticsModal()" class="px-3.5 py-2 rounded-xl bg-brown-900 hover:bg-brown-800 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                        <i class="fa-solid fa-pen-to-square"></i> Input Manual
+                    </button>
+                    <button onclick="openAiScannerModal()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-md">
+                        <i class="fa-solid fa-robot"></i> Scan Screenshot (AI)
+                    </button>
+                    <button onclick="downloadCsvTemplate()" class="px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-brown-900 text-xs font-bold transition flex items-center gap-1.5" title="Download template CSV format">
+                        <i class="fa-solid fa-download"></i> Template CSV
+                    </button>
+                    <label class="px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-brown-900 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-upload"></i> Import CSV
+                        <input type="file" id="csv-file-input" accept=".csv" class="hidden" onchange="handleCsvImport(event)">
+                    </label>
+                    <button onclick="exportAnalyticsCsv()" class="px-3.5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                        <i class="fa-solid fa-file-export"></i> Export CSV
+                    </button>
+                </div>
+            </div>
+
+            <!-- ANALYTICS FILTERS BAR -->
+            <div class="bg-white border border-stone-200/80 rounded-2xl p-4 shadow-sm grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                    <label class="block text-[11px] font-bold text-stone-500 uppercase mb-1">Filter Periode</label>
+                    <select id="ana-filter-period" onchange="renderAnalytics()" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold text-brown-950 outline-none">
+                        <option value="all">Semua Waktu</option>
+                        <option value="7">7 Hari Terakhir</option>
+                        <option value="30">30 Hari Terakhir</option>
+                        <option value="90">90 Hari Terakhir</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-stone-500 uppercase mb-1">Filter Platform</label>
+                    <select id="ana-filter-platform" onchange="renderAnalytics()" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold text-brown-950 outline-none">
+                        <option value="all">Semua Platform</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-stone-500 uppercase mb-1">Filter Brand</label>
+                    <select id="ana-filter-brand" onchange="renderAnalytics()" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold text-brown-950 outline-none">
+                        <option value="all">Semua Brand</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- SUMMARY METRICS CARDS -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white border border-stone-200/80 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+                    <span class="text-xs font-bold text-stone-500 uppercase">Total Views</span>
+                    <h3 id="ana-stat-views" class="text-2xl font-extrabold text-brown-950 mt-2">0</h3>
+                </div>
+                <div class="bg-white border border-stone-200/80 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+                    <span class="text-xs font-bold text-stone-500 uppercase">Total Reach</span>
+                    <h3 id="ana-stat-reach" class="text-2xl font-extrabold text-brown-950 mt-2">0</h3>
+                </div>
+                <div class="bg-white border border-stone-200/80 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+                    <span class="text-xs font-bold text-stone-500 uppercase">Total Engagement</span>
+                    <h3 id="ana-stat-eng" class="text-2xl font-extrabold text-amber-600 mt-2">0</h3>
+                </div>
+                <div class="bg-white border border-stone-200/80 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+                    <span class="text-xs font-bold text-stone-500 uppercase">Engagement Rate</span>
+                    <h3 id="ana-stat-erate" class="text-2xl font-extrabold text-emerald-600 mt-2">0.0%</h3>
+                </div>
+            </div>
+
+            <!-- CHARTS SECTION -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Trend Chart -->
+                <div class="bg-white border border-stone-200/80 rounded-2xl p-5 shadow-sm lg:col-span-2 flex flex-col gap-3">
+                    <h4 class="text-xs font-extrabold text-brown-900 uppercase tracking-wider">Tren Views & Engagement Seiring Waktu</h4>
+                    <div class="h-64 relative w-full">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+                <!-- Engagement Breakdown -->
+                <div class="bg-white border border-stone-200/80 rounded-2xl p-5 shadow-sm flex flex-col gap-3">
+                    <h4 class="text-xs font-extrabold text-brown-900 uppercase tracking-wider">Breakdown Interaksi</h4>
+                    <div class="h-64 relative w-full flex items-center justify-center">
+                        <canvas id="breakdownChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PERFORMANCE TABLE -->
+            <div class="bg-white border border-stone-200/80 rounded-2xl p-5 shadow-sm flex flex-col gap-4">
+                <div class="flex items-center justify-between border-b border-stone-200 pb-3">
+                    <h4 class="text-xs font-extrabold text-brown-900 uppercase tracking-wider">Tabel Performa Per Konten (Klik Kolom untuk Sortir)</h4>
+                </div>
+                <div class="overflow-x-auto no-scrollbar">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-stone-200 text-[11px] font-bold text-brown-800 uppercase tracking-wider cursor-pointer">
+                                <th class="py-3 px-3" onclick="sortAnalyticsTable('title')">Judul / SOW ↕</th>
+                                <th class="py-3 px-3" onclick="sortAnalyticsTable('brand')">Brand ↕</th>
+                                <th class="py-3 px-3" onclick="sortAnalyticsTable('platform')">Platform ↕</th>
+                                <th class="py-3 px-3" onclick="sortAnalyticsTable('date')">Tanggal ↕</th>
+                                <th class="py-3 px-3 text-right" onclick="sortAnalyticsTable('views')">Views ↕</th>
+                                <th class="py-3 px-3 text-right" onclick="sortAnalyticsTable('likes')">Likes ↕</th>
+                                <th class="py-3 px-3 text-right" onclick="sortAnalyticsTable('comments')">Comments ↕</th>
+                                <th class="py-3 px-3 text-right" onclick="sortAnalyticsTable('shares')">Shares ↕</th>
+                                <th class="py-3 px-3 text-right" onclick="sortAnalyticsTable('saves')">Saves ↕</th>
+                                <th class="py-3 px-3 text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="analytics-table-body" class="text-xs text-brown-950 divide-y divide-stone-100"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-stone-200 py-3.5 px-4 text-center text-xs text-brown-800 font-medium">
+        <p>Color of Raven Tracker & Analytics — Made by AI (Gemini) • CSV & AI Screenshot Support</p>
+    </footer>
+
+    <!-- ADD / EDIT SCHEDULE MODAL -->
+    <div id="content-modal" class="fixed inset-0 bg-brown-950/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white border border-stone-200 w-full max-w-xl rounded-2xl p-5 shadow-2xl flex flex-col gap-4 my-8">
+            <div class="flex items-center justify-between border-b border-stone-200 pb-3">
+                <h3 id="modal-title" class="font-extrabold text-brown-950 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-calendar-plus text-amber-600"></i> Tambah Jadwal Konten Baru
+                </h3>
+                <button onclick="closeAddModal()" class="text-stone-400 hover:text-brown-950 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <form id="content-form" onsubmit="saveSchedule(event)" class="flex flex-col gap-3.5 max-h-[75vh] overflow-y-auto pr-1">
+                <input type="hidden" id="form-id">
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-brown-800 uppercase mb-1">Tanggal Posting</label>
+                        <input type="date" id="form-date" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold text-brown-950">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-brown-800 uppercase mb-1">Deadline</label>
+                        <input type="date" id="form-deadline" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold text-brown-950">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-brown-800 uppercase mb-1">Brand / Klien</label>
+                        <input type="text" id="form-brand" placeholder="Contoh: Brand Skincare / Musik" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold text-brown-950">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-brown-800 uppercase mb-1">Sosial Media</label>
+                        <input type="text" id="form-sosmed" placeholder="TikTok / Instagram / YouTube" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold text-brown-950">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold text-brown-800 uppercase mb-1">SOW (Scope of Work)</label>
+                    <textarea id="form-sow" rows="2" placeholder="Contoh: Reels 30 detik, review produk" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs text-brown-950 resize-none"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-brown-800 uppercase mb-1">Draft Video</label>
+                        <input type="text" id="form-draft" placeholder="Link / Selesai edit" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs text-brown-950">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-brown-800 uppercase mb-1">Thumbnail Video</label>
+                        <input type="text" id="form-thumbnail" placeholder="Link Canva / Done" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs text-brown-950">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold text-brown-800 uppercase mb-1">Caption Video</label>
+                    <textarea id="form-caption" rows="2" placeholder="Tulis caption..." class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs text-brown-950 resize-none"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-brown-800 uppercase mb-1">Keranjang Kuning</label>
+                        <select id="form-yellow-cart" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold text-brown-950">
+                            <option value="Tidak">Tidak</option>
+                            <option value="Ya">Ya (Ada Keranjang Kuning)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-brown-800 uppercase mb-1">Status Pengerjaan</label>
+                        <select id="form-status" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold text-brown-950">
+                            <option value="shooting + editing">Shooting + Editing</option>
+                            <option value="on draft">On Draft</option>
+                            <option value="uploaded">Uploaded</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold text-brown-800 uppercase mb-1">Link Referensi Konten</label>
+                    <input type="url" id="form-link" placeholder="https://..." class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-mono text-brown-950">
+                </div>
+
+                <div class="pt-3 border-t border-stone-200 flex justify-end gap-2">
+                    <button type="button" onclick="closeAddModal()" class="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs rounded-xl transition">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-brown-900 hover:bg-brown-800 text-white font-bold text-xs rounded-xl transition shadow-md">Simpan Jadwal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MANUAL ANALYTICS MODAL -->
+    <div id="analytics-modal" class="fixed inset-0 bg-brown-950/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white border border-stone-200 w-full max-w-lg rounded-2xl p-5 shadow-2xl flex flex-col gap-4 my-8">
+            <div class="flex items-center justify-between border-b border-stone-200 pb-3">
+                <h3 id="ana-modal-title" class="font-extrabold text-brown-950 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square text-amber-600"></i> Input Manual Performa Konten
+                </h3>
+                <button onclick="closeManualAnalyticsModal()" class="text-stone-400 hover:text-brown-950 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <form id="analytics-form" onsubmit="saveManualAnalytics(event)" class="flex flex-col gap-3.5 max-h-[75vh] overflow-y-auto pr-1">
+                <input type="hidden" id="ana-form-id">
+                
+                <div>
+                    <label class="block text-[11px] font-bold text-brown-800 uppercase mb-1">Hubungkan ke Jadwal Konten (Opsional)</label>
+                    <select id="ana-form-post-id" onchange="autofillFromSchedule()" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold text-brown-950">
+                        <option value="">-- Pilih dari Jadwal --</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-brown-800 uppercase mb-1">Judul / SOW Konten</label>
+                        <input type="text" id="ana-form-title" placeholder="Contoh: Review Gitar Akustik" required class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold text-brown-950">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-brown-800 uppercase mb-1">Tanggal Publish</label>
+                        <input type="date" id="ana-form-date" required class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold text-brown-950">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-brown-800 uppercase mb-1">Brand / Klien</label>
+                        <input type="text" id="ana-form-brand" placeholder="Contoh: Brand A" required class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold text-brown-950">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-brown-800 uppercase mb-1">Platform Sosmed</label>
+                        <input type="text" id="ana-form-platform" placeholder="TikTok / Instagram" required class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold text-brown-950">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-brown-800 uppercase mb-1">Views</label>
+                        <input type="number" id="ana-form-views" value="0" min="0" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold text-brown-950">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-brown-800 uppercase mb-1">Reach (Jangkauan)</label>
+                        <input type="number" id="ana-form-reach" value="0" min="0" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold text-brown-950">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <div>
+                        <label class="block text-[10px] font-bold text-brown-800 uppercase mb-1">Likes</label>
+                        <input type="number" id="ana-form-likes" value="0" min="0" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold text-brown-950">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-brown-800 uppercase mb-1">Comments</label>
+                        <input type="number" id="ana-form-comments" value="0" min="0" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold text-brown-950">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-brown-800 uppercase mb-1">Shares</label>
+                        <input type="number" id="ana-form-shares" value="0" min="0" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold text-brown-950">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-brown-800 uppercase mb-1">Saves</label>
+                        <input type="number" id="ana-form-saves" value="0" min="0" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold text-brown-950">
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-stone-200 flex justify-end gap-2">
+                    <button type="button" onclick="closeManualAnalyticsModal()" class="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs rounded-xl transition">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-xl transition shadow-md">Simpan Performa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- AI SCREENSHOT SCANNER MODAL -->
+    <div id="ai-scanner-modal" class="fixed inset-0 bg-brown-950/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white border border-stone-200 w-full max-w-md rounded-2xl p-5 shadow-2xl flex flex-col gap-4">
+            <div class="flex items-center justify-between border-b border-stone-200 pb-3">
+                <h3 class="font-extrabold text-brown-950 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-robot text-amber-600"></i> AI Screenshot Analytics OCR
+                </h3>
+                <button onclick="closeAiScannerModal()" class="text-stone-400 hover:text-brown-950 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="flex flex-col gap-3">
+                <p class="text-xs text-stone-600">Upload screenshot analytics (TikTok, Instagram Insights, YouTube Studio). AI Gemini akan otomatis membaca Views, Likes, Comments, Shares, dan Saves!</p>
+                <input type="file" id="ai-screenshot-file" accept="image/*" class="w-full text-xs text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 cursor-pointer">
+                <div id="ai-scan-loading" class="hidden flex items-center justify-center gap-2 py-4 text-xs font-bold text-amber-700">
+                    <i class="fa-solid fa-spinner animate-spin"></i> Gemini sedang membaca screenshot...
+                </div>
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="closeAiScannerModal()" class="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs rounded-xl transition">Batal</button>
+                    <button type="button" onclick="processAiScreenshot()" class="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-xl transition shadow-md">Proses Screenshot</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT LOGIC -->
+    <script>
+        const SCHEDULE_KEY = 'color_of_raven_tracker_schedules_v3';
+        const ANALYTICS_KEY = 'color_of_raven_tracker_analytics_v3';
+        
+        let schedules = [];
+        let analytics = [];
+        let currentTab = 'schedule';
+        let currentSortCol = 'date';
+        let sortAscending = false;
+        let trendChartInstance = null;
+        let breakdownChartInstance = null;
+
+        function switchTab(tab) {
+            currentTab = tab;
+            const btnSch = document.getElementById('tab-btn-schedule');
+            const btnAna = document.getElementById('tab-btn-analytics');
+            const divSch = document.getElementById('tab-schedule');
+            const divAna = document.getElementById('tab-analytics');
+
+            if(tab === 'schedule') {
+                btnSch.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition bg-amber-600 text-white shadow-sm flex items-center gap-1.5";
+                btnAna.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition text-stone-300 hover:text-white flex items-center gap-1.5";
+                divSch.classList.remove('hidden');
+                divAna.classList.add('hidden');
+                renderSchedule();
+            } else {
+                btnAna.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition bg-amber-600 text-white shadow-sm flex items-center gap-1.5";
+                btnSch.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition text-stone-300 hover:text-white flex items-center gap-1.5";
+                divAna.classList.remove('hidden');
+                divSch.classList.add('hidden');
+                populateAnalyticsFilters();
+                renderAnalytics();
+            }
+        }
+
+        function loadData() {
+            try {
+                const storedSch = localStorage.getItem(SCHEDULE_KEY);
+                if (storedSch) schedules = JSON.parse(storedSch);
+            } catch(e) { schedules = []; }
+
+            try {
+                const storedAna = localStorage.getItem(ANALYTICS_KEY);
+                if (storedAna) analytics = JSON.parse(storedAna);
+            } catch(e) { analytics = []; }
+
+            if(schedules.length === 0) {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                schedules.push({
+                    id: 'sch_' + Date.now(),
+                    date: tomorrow.toISOString().split('T')[0],
+                    deadline: tomorrow.toISOString().split('T')[0],
+                    brand: 'Color of Raven Brand',
+                    sosmed: 'Instagram / TikTok',
+                    sow: 'Posting Konten & Musik Reels IG',
+                    draft: 'Ready in Drive',
+                    thumbnail: 'Canva Done',
+                    caption: 'Check this out!',
+                    yellowCart: 'Ya',
+                    link: 'https://google.com',
+                    status: 'shooting + editing'
+                });
+                saveSchedules();
+            }
+
+            if(analytics.length === 0) {
+                const pastDate = new Date();
+                pastDate.setDate(pastDate.getDate() - 5);
+                analytics.push({
+                    id: 'ana_' + Date.now(),
+                    postId: schedules[0]?.id || '',
+                    title: schedules[0]?.sow || 'Sample Content',
+                    brand: 'Color of Raven Brand',
+                    platform: 'TikTok',
+                    date: pastDate.toISOString().split('T')[0],
+                    views: 15400,
+                    reach: 12000,
+                    likes: 1850,
+                    comments: 210,
+                    shares: 140,
+                    saves: 320
+                });
+                saveAnalytics();
+            }
+
+            renderSchedule();
+        }
+
+        function saveSchedules() {
+            try { localStorage.setItem(SCHEDULE_KEY, JSON.stringify(schedules)); } catch(e) {}
+        }
+
+        function saveAnalytics() {
+            try { localStorage.setItem(ANALYTICS_KEY, JSON.stringify(analytics)); } catch(e) {}
+        }
+
+        function getDayDiff(dateString) {
+            if (!dateString) return 999;
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const target = new Date(dateString);
+            target.setHours(0,0,0,0);
+            const diffTime = target - today;
+            return Math.round(diffTime / (1000 * 60 * 60 * 24));
+        }
+
+        // ==================== SCHEDULE FUNCTIONS ====================
+        function getWhatsAppUrl(item) {
+            const diff = getDayDiff(item.date);
+            let statusText = "Jadwal Masih Aman";
+            if (diff === 0) statusText = "🚨 HARI INI JADWAL POSTING!";
+            else if (diff === 1) statusText = "⚠️ H-1 REMINDER (Besok Posting!)";
+            else if (diff < 0) statusText = "❌ TERLEWAT JADWAL!";
+
+            const message = `🔔 *COLOR OF RAVEN - REMINDER KONTEN* 🔔\n\n` +
+                            `📌 Urgency: ${statusText}\n` +
+                            `📅 Tanggal Post: ${item.date || '-'}\n` +
+                            `⏰ Deadline: ${item.deadline || '-'}\n` +
+                            `🏷️ Brand: ${item.brand || '-'}\n` +
+                            `📱 Sosmed: ${item.sosmed || '-'}\n` +
+                            `📝 SOW: ${item.sow || '-'}\n` +
+                            `🎬 Draft Video: ${item.draft || '-'}\n` +
+                            `🖼️ Thumbnail: ${item.thumbnail || '-'}\n` +
+                            `💬 Caption: ${item.caption || '-'}\n` +
+                            `🛒 Keranjang Kuning: ${item.yellowCart || 'Tidak'}\n` +
+                            `📊 Status: ${item.status || 'on draft'}\n` +
+                            `🔗 Link Referensi: ${item.link || '-'}\n\n` +
+                            `_Dibuat otomatis via Color of Raven Tracker (Gemini)_`;
+            
+            return `https://wa.me/?text=${encodeURIComponent(message)}`;
+        }
+
+        function renderSchedule() {
+            const tbody = document.getElementById('content-table-body');
+            const urgentBanner = document.getElementById('urgent-banner');
+            const urgentList = document.getElementById('urgent-list');
+            const emptyState = document.getElementById('empty-state');
+            const filterVal = document.getElementById('filter-status').value;
+
+            tbody.innerHTML = '';
+            urgentList.innerHTML = '';
+
+            let totalCount = 0;
+            let urgentCount = 0;
+            let uploadedCount = 0;
+            let urgentItems = [];
+
+            const sorted = [...schedules].sort((a,b) => new Date(a.date || '9999-12-31') - new Date(b.date || '9999-12-31'));
+
+            sorted.forEach(item => {
+                totalCount++;
+                const diff = getDayDiff(item.date);
+                const isUrgent = (diff === 0 || diff === 1) && item.status !== 'uploaded';
+                if (isUrgent) { urgentCount++; urgentItems.push(item); }
+                if (item.status === 'uploaded') uploadedCount++;
+            });
+
+            if (urgentItems.length > 0) {
+                urgentBanner.classList.remove('hidden');
+                document.getElementById('urgent-count').innerText = `${urgentItems.length} Item Perlu Perhatian`;
+                urgentItems.forEach(item => {
+                    const diff = getDayDiff(item.date);
+                    const tagText = diff === 0 ? 'Hari Ini!' : 'H-1 (Besok)';
+                    const card = document.createElement('div');
+                    card.className = 'bg-white p-3 rounded-xl border border-amber-200 shadow-sm flex flex-col justify-between gap-2';
+                    card.innerHTML = `
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-[10px] font-extrabold bg-amber-100 text-amber-800 px-2 py-0.5 rounded">${tagText}</span>
+                                <span class="text-[11px] font-bold text-stone-500">${item.date || '-'}</span>
+                            </div>
+                            <h4 class="font-extrabold text-xs text-brown-950">${item.brand || 'Tanpa Brand'} (${item.sosmed || 'Sosmed'})</h4>
+                            <p class="text-[11px] text-brown-800 line-clamp-1">${item.sow || '-'}</p>
+                        </div>
+                        <a href="${getWhatsAppUrl(item)}" target="_blank" class="w-full py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold text-center transition flex items-center justify-center gap-1.5 shadow-sm">
+                            <i class="fa-brands fa-whatsapp"></i> Kirim WA Reminder
+                        </a>
+                    `;
+                    urgentList.appendChild(card);
+                });
+            } else {
+                urgentBanner.classList.add('hidden');
+            }
+
+            document.getElementById('stat-total').innerText = totalCount;
+            document.getElementById('stat-urgent').innerText = urgentCount;
+            document.getElementById('stat-done').innerText = uploadedCount;
+
+            if (sorted.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            sorted.forEach(item => {
+                const diff = getDayDiff(item.date);
+                const isUrgent = (diff === 0 || diff === 1) && item.status !== 'uploaded';
+                
+                if (filterVal === 'shooting + editing' && item.status !== 'shooting + editing') return;
+                if (filterVal === 'on draft' && item.status !== 'on draft') return;
+                if (filterVal === 'uploaded' && item.status !== 'uploaded') return;
+                if (filterVal === 'urgent' && !isUrgent) return;
+
+                // Find linked analytics
+                const ana = analytics.find(a => a.postId === item.id);
+                let perfHtml = '<span class="text-stone-400 italic">Belum ada data</span>';
+                if (ana) {
+                    const totalEng = ana.likes + ana.comments + ana.shares + ana.saves;
+                    perfHtml = `<div class="font-bold text-amber-700">${ana.views.toLocaleString()} views</div><div class="text-[11px] text-stone-600">${totalEng.toLocaleString()} eng</div>`;
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = `hover:bg-stone-50 transition ${isUrgent ? 'bg-amber-50/40 font-semibold' : ''}`;
+                
+                let statusBadge = `<span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-amber-100 text-amber-800">Shooting + Editing</span>`;
+                if (item.status === 'uploaded') statusBadge = `<span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-800">Uploaded</span>`;
+                else if (item.status === 'on draft') statusBadge = `<span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-stone-200 text-stone-700">On Draft</span>`;
+
+                tr.innerHTML = `
+                    <td class="py-3 px-3">
+                        <div class="font-bold text-brown-950">Post: ${item.date || '-'}</div>
+                        <div class="text-[11px] text-stone-500">Deadline: ${item.deadline || '-'}</div>
+                    </td>
+                    <td class="py-3 px-3">
+                        <div class="font-extrabold text-brown-900">${item.brand || '-'}</div>
+                        <div class="text-[11px] text-amber-700 font-semibold">${item.sosmed || '-'}</div>
+                    </td>
+                    <td class="py-3 px-3">
+                        <div class="text-brown-900 font-medium">${item.sow || '-'}</div>
+                        <div class="text-[11px] text-stone-500 flex gap-2 mt-0.5">
+                            <span>Draft: ${item.draft || '-'}</span>
+                            ${item.yellowCart === 'Ya' ? '|<span class="text-amber-600 font-bold">🛒 Kuning</span>' : ''}
+                        </div>
+                    </td>
+                    <td class="py-3 px-3">${perfHtml}</td>
+                    <td class="py-3 px-3">${statusBadge}</td>
+                    <td class="py-3 px-3 text-right">
+                        <div class="flex items-center justify-end gap-1.5">
+                            <a href="${getWhatsAppUrl(item)}" target="_blank" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[11px] font-bold transition flex items-center gap-1 shadow-sm" title="Kirim WA">
+                                <i class="fa-brands fa-whatsapp text-sm"></i> WA
+                            </a>
+                            <button onclick="openEditModal('${item.id}')" class="px-2 py-1.5 bg-stone-100 hover:bg-stone-200 text-brown-800 rounded-lg text-[11px] transition" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteSchedule('${item.id}')" class="px-2 py-1.5 bg-stone-100 hover:bg-rose-100 text-stone-500 hover:text-rose-600 rounded-lg text-[11px] transition" title="Hapus"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function openAddModal() {
+            document.getElementById('modal-title').innerHTML = '<i class="fa-solid fa-calendar-plus text-amber-600"></i> Tambah Jadwal Konten Baru';
+            document.getElementById('form-id').value = '';
+            document.getElementById('form-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('form-deadline').value = '';
+            document.getElementById('form-brand').value = '';
+            document.getElementById('form-sosmed').value = '';
+            document.getElementById('form-sow').value = '';
+            document.getElementById('form-draft').value = '';
+            document.getElementById('form-thumbnail').value = '';
+            document.getElementById('form-caption').value = '';
+            document.getElementById('form-yellow-cart').value = 'Tidak';
+            document.getElementById('form-link').value = '';
+            document.getElementById('form-status').value = 'shooting + editing';
+            document.getElementById('content-modal').classList.remove('hidden');
+        }
+
+        function openEditModal(id) {
+            const item = schedules.find(s => s.id === id);
+            if(!item) return;
+            document.getElementById('modal-title').innerHTML = '<i class="fa-solid fa-pen-to-square text-amber-600"></i> Edit Jadwal Konten';
+            document.getElementById('form-id').value = item.id;
+            document.getElementById('form-date').value = item.date || '';
+            document.getElementById('form-deadline').value = item.deadline || '';
+            document.getElementById('form-brand').value = item.brand || '';
+            document.getElementById('form-sosmed').value = item.sosmed || '';
+            document.getElementById('form-sow').value = item.sow || '';
+            document.getElementById('form-draft').value = item.draft || '';
+            document.getElementById('form-thumbnail').value = item.thumbnail || '';
+            document.getElementById('form-caption').value = item.caption || '';
+            document.getElementById('form-yellow-cart').value = item.yellowCart || 'Tidak';
+            document.getElementById('form-link').value = item.link || '';
+            document.getElementById('form-status').value = item.status || 'shooting + editing';
+            document.getElementById('content-modal').classList.remove('hidden');
+        }
+
+        function closeAddModal() { document.getElementById('content-modal').classList.add('hidden'); }
+
+        function saveSchedule(e) {
+            e.preventDefault();
+            const id = document.getElementById('form-id').value;
+            const data = {
+                id: id || ('sch_' + Date.now()),
+                date: document.getElementById('form-date').value,
+                deadline: document.getElementById('form-deadline').value,
+                brand: document.getElementById('form-brand').value,
+                sosmed: document.getElementById('form-sosmed').value,
+                sow: document.getElementById('form-sow').value,
+                draft: document.getElementById('form-draft').value,
+                thumbnail: document.getElementById('form-thumbnail').value,
+                caption: document.getElementById('form-caption').value,
+                yellowCart: document.getElementById('form-yellow-cart').value,
+                link: document.getElementById('form-link').value,
+                status: document.getElementById('form-status').value
+            };
+
+            if(id) {
+                const idx = schedules.findIndex(s => s.id === id);
+                if(idx !== -1) schedules[idx] = data;
+                showToast('Jadwal berhasil diperbarui!');
+            } else {
+                schedules.unshift(data);
+                showToast('Jadwal baru berhasil ditambahkan!');
+            }
+
+            saveSchedules();
+            renderSchedule();
+            closeAddModal();
+        }
+
+        function deleteSchedule(id) {
+            schedules = schedules.filter(s => s.id !== id);
+            saveSchedules();
+            renderSchedule();
+            showToast('Jadwal dihapus.');
+        }
+
+        // ==================== ANALYTICS FUNCTIONS ====================
+        function populateAnalyticsFilters() {
+            const platformSet = new Set();
+            const brandSet = new Set();
+            analytics.forEach(a => {
+                if(a.platform) platformSet.add(a.platform);
+                if(a.brand) brandSet.add(a.brand);
+            });
+
+            const pSelect = document.getElementById('ana-filter-platform');
+            const bSelect = document.getElementById('ana-filter-brand');
+            const currentP = pSelect.value;
+            const currentB = bSelect.value;
+
+            pSelect.innerHTML = '<option value="all">Semua Platform</option>';
+            platformSet.forEach(p => {
+                pSelect.innerHTML += `<option value="${p}">${p}</option>`;
+            });
+            pSelect.value = platformSet.has(currentP) ? currentP : 'all';
+
+            bSelect.innerHTML = '<option value="all">Semua Brand</option>';
+            brandSet.forEach(b => {
+                bSelect.innerHTML += `<option value="${b}">${b}</option>`;
+            });
+            bSelect.value = brandSet.has(currentB) ? currentB : 'all';
+        }
+
+        function getFilteredAnalytics() {
+            const period = document.getElementById('ana-filter-period').value;
+            const platform = document.getElementById('ana-filter-platform').value;
+            const brand = document.getElementById('ana-filter-brand').value;
+
+            const now = new Date();
+            return analytics.filter(item => {
+                if(platform !== 'all' && item.platform !== platform) return false;
+                if(brand !== 'all' && item.brand !== brand) return false;
+                if(period !== 'all') {
+                    const itemDate = new Date(item.date || '2000-01-01');
+                    const diffDays = (now - itemDate) / (1000 * 60 * 60 * 24);
+                    if(diffDays > parseInt(period)) return false;
+                }
+                return true;
+            });
+        }
+
+        function renderAnalytics() {
+            const filtered = getFilteredAnalytics();
+
+            let totalViews = 0, totalReach = 0, totalLikes = 0, totalComments = 0, totalShares = 0, totalSaves = 0;
+            filtered.forEach(i => {
+                totalViews += (i.views || 0);
+                totalReach += (i.reach || 0);
+                totalLikes += (i.likes || 0);
+                totalComments += (i.comments || 0);
+                totalShares += (i.shares || 0);
+                totalSaves += (i.saves || 0);
+            });
+
+            const totalEng = totalLikes + totalComments + totalShares + totalSaves;
+            const eRate = totalViews > 0 ? ((totalEng / totalViews) * 100).toFixed(2) : '0.0';
+
+            document.getElementById('ana-stat-views').innerText = totalViews.toLocaleString();
+            document.getElementById('ana-stat-reach').innerText = totalReach.toLocaleString();
+            document.getElementById('ana-stat-eng').innerText = totalEng.toLocaleString();
+            document.getElementById('ana-stat-erate').innerText = eRate + '%';
+
+            renderCharts(filtered);
+            renderAnalyticsTable(filtered);
+        }
+
+        function renderCharts(filtered) {
+            const sorted = [...filtered].sort((a,b) => new Date(a.date || '') - new Date(b.date || ''));
+            const labels = sorted.map(i => i.date || 'Unknown');
+            const viewsData = sorted.map(i => i.views || 0);
+            const engData = sorted.map(i => (i.likes || 0) + (i.comments || 0) + (i.shares || 0) + (i.saves || 0));
+
+            const ctxTrend = document.getElementById('trendChart').getContext('2d');
+            if(trendChartInstance) trendChartInstance.destroy();
+            trendChartInstance = new Chart(ctxTrend, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Views', data: viewsData, borderColor: '#d97706', backgroundColor: 'rgba(217, 119, 6, 0.1)', tension: 0.3, fill: true },
+                        { label: 'Engagement', data: engData, borderColor: '#3c291d', backgroundColor: 'rgba(60, 41, 29, 0.1)', tension: 0.3, fill: true }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            let sumLikes = 0, sumComments = 0, sumShares = 0, sumSaves = 0;
+            filtered.forEach(i => {
+                sumLikes += (i.likes || 0);
+                sumComments += (i.comments || 0);
+                sumShares += (i.shares || 0);
+                sumSaves += (i.saves || 0);
+            });
+
+            const ctxBreakdown = document.getElementById('breakdownChart').getContext('2d');
+            if(breakdownChartInstance) breakdownChartInstance.destroy();
+            breakdownChartInstance = new Chart(ctxBreakdown, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Likes', 'Comments', 'Shares', 'Saves'],
+                    datasets: [{
+                        data: [sumLikes, sumComments, sumShares, sumSaves],
+                        backgroundColor: ['#d97706', '#94724f', '#5c412e', '#b1916a']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+
+        function renderAnalyticsTable(filtered) {
+            const tbody = document.getElementById('analytics-table-body');
+            tbody.innerHTML = '';
+
+            const sorted = [...filtered].sort((a,b) => {
+                let valA = a[currentSortCol] || '';
+                let valB = b[currentSortCol] || '';
+                if(typeof valA === 'number') {
+                    return sortAscending ? valA - valB : valB - valA;
+                }
+                return sortAscending ? String(valA).localeCompare(String(valB)) : String(valB).localeCompare(String(valA));
+            });
+
+            if(sorted.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="10" class="py-8 text-center text-stone-400">Belum ada data analytics untuk filter ini.</td></tr>`;
+                return;
+            }
+
+            sorted.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-stone-50 transition';
+                tr.innerHTML = `
+                    <td class="py-3 px-3 font-bold text-brown-950">${item.title || '-'}</td>
+                    <td class="py-3 px-3 font-semibold text-brown-900">${item.brand || '-'}</td>
+                    <td class="py-3 px-3"><span class="px-2 py-0.5 rounded bg-stone-100 font-bold text-amber-800 text-[10px]">${item.platform || '-'}</span></td>
+                    <td class="py-3 px-3 text-stone-600">${item.date || '-'}</td>
+                    <td class="py-3 px-3 text-right font-extrabold text-amber-700">${(item.views || 0).toLocaleString()}</td>
+                    <td class="py-3 px-3 text-right">${(item.likes || 0).toLocaleString()}</td>
+                    <td class="py-3 px-3 text-right">${(item.comments || 0).toLocaleString()}</td>
+                    <td class="py-3 px-3 text-right">${(item.shares || 0).toLocaleString()}</td>
+                    <td class="py-3 px-3 text-right">${(item.saves || 0).toLocaleString()}</td>
+                    <td class="py-3 px-3 text-right">
+                        <div class="flex items-center justify-end gap-1.5">
+                            <button onclick="openEditAnalyticsModal('${item.id}')" class="px-2 py-1.5 bg-stone-100 hover:bg-stone-200 text-brown-800 rounded-lg text-[11px]" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteAnalytics('${item.id}')" class="px-2 py-1.5 bg-stone-100 hover:bg-rose-100 text-stone-500 hover:text-rose-600 rounded-lg text-[11px]" title="Hapus"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function sortAnalyticsTable(col) {
+            if(currentSortCol === col) {
+                sortAscending = !sortAscending;
+            } else {
+                currentSortCol = col;
+                sortAscending = false;
+            }
+            renderAnalytics();
+        }
+
+        function openManualAnalyticsModal() {
+            document.getElementById('ana-modal-title').innerHTML = '<i class="fa-solid fa-pen-to-square text-amber-600"></i> Input Manual Performa Konten';
+            document.getElementById('ana-form-id').value = '';
+            document.getElementById('ana-form-title').value = '';
+            document.getElementById('ana-form-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('ana-form-brand').value = '';
+            document.getElementById('ana-form-platform').value = 'TikTok';
+            document.getElementById('ana-form-views').value = '0';
+            document.getElementById('ana-form-reach').value = '0';
+            document.getElementById('ana-form-likes').value = '0';
+            document.getElementById('ana-form-comments').value = '0';
+            document.getElementById('ana-form-shares').value = '0';
+            document.getElementById('ana-form-saves').value = '0';
+
+            const sel = document.getElementById('ana-form-post-id');
+            sel.innerHTML = '<option value="">-- Pilih dari Jadwal --</option>';
+            schedules.forEach(s => {
+                sel.innerHTML += `<option value="${s.id}">${s.brand} - ${s.sow} (${s.date})</option>`;
+            });
+
+            document.getElementById('analytics-modal').classList.remove('hidden');
+        }
+
+        function openEditAnalyticsModal(id) {
+            const item = analytics.find(a => a.id === id);
+            if(!item) return;
+
+            document.getElementById('ana-modal-title').innerHTML = '<i class="fa-solid fa-pen-to-square text-amber-600"></i> Edit Performa Konten';
+            document.getElementById('ana-form-id').value = item.id;
+            document.getElementById('ana-form-title').value = item.title || '';
+            document.getElementById('ana-form-date').value = item.date || '';
+            document.getElementById('ana-form-brand').value = item.brand || '';
+            document.getElementById('ana-form-platform').value = item.platform || '';
+            document.getElementById('ana-form-views').value = item.views || 0;
+            document.getElementById('ana-form-reach').value = item.reach || 0;
+            document.getElementById('ana-form-likes').value = item.likes || 0;
+            document.getElementById('ana-form-comments').value = item.comments || 0;
+            document.getElementById('ana-form-shares').value = item.shares || 0;
+            document.getElementById('ana-form-saves').value = item.saves || 0;
+
+            const sel = document.getElementById('ana-form-post-id');
+            sel.innerHTML = '<option value="">-- Pilih dari Jadwal --</option>';
+            schedules.forEach(s => {
+                sel.innerHTML += `<option value="${s.id}" ${s.id === item.postId ? 'selected' : ''}>${s.brand} - ${s.sow} (${s.date})</option>`;
+            });
+
+            document.getElementById('analytics-modal').classList.remove('hidden');
+        }
+
+        function closeManualAnalyticsModal() { document.getElementById('analytics-modal').classList.add('hidden'); }
+
+        function autofillFromSchedule() {
+            const postId = document.getElementById('ana-form-post-id').value;
+            if(!postId) return;
+            const sch = schedules.find(s => s.id === postId);
+            if(sch) {
+                document.getElementById('ana-form-title').value = sch.sow || '';
+                document.getElementById('ana-form-brand').value = sch.brand || '';
+                if(sch.sosmed) document.getElementById('ana-form-platform').value = sch.sosmed.split('/')[0].trim();
+                if(sch.date) document.getElementById('ana-form-date').value = sch.date;
+            }
+        }
+
+        function saveManualAnalytics(e) {
+            e.preventDefault();
+            const id = document.getElementById('ana-form-id').value;
+            const data = {
+                id: id || ('ana_' + Date.now()),
+                postId: document.getElementById('ana-form-post-id').value,
+                title: document.getElementById('ana-form-title').value,
+                date: document.getElementById('ana-form-date').value,
+                brand: document.getElementById('ana-form-brand').value,
+                platform: document.getElementById('ana-form-platform').value,
+                views: parseInt(document.getElementById('ana-form-views').value) || 0,
+                reach: parseInt(document.getElementById('ana-form-reach').value) || 0,
+                likes: parseInt(document.getElementById('ana-form-likes').value) || 0,
+                comments: parseInt(document.getElementById('ana-form-comments').value) || 0,
+                shares: parseInt(document.getElementById('ana-form-shares').value) || 0,
+                saves: parseInt(document.getElementById('ana-form-saves').value) || 0
+            };
+
+            if(id) {
+                const idx = analytics.findIndex(a => a.id === id);
+                if(idx !== -1) analytics[idx] = data;
+                showToast('Performa berhasil diperbarui!');
+            } else {
+                analytics.unshift(data);
+                showToast('Performa baru berhasil ditambahkan!');
+            }
+
+            saveAnalytics();
+            populateAnalyticsFilters();
+            renderAnalytics();
+            renderSchedule();
+            closeManualAnalyticsModal();
+        }
+
+        function deleteAnalytics(id) {
+            analytics = analytics.filter(a => a.id !== id);
+            saveAnalytics();
+            populateAnalyticsFilters();
+            renderAnalytics();
+            renderSchedule();
+            showToast('Data analytics dihapus.');
+        }
+
+        // ==================== CSV & AI SCANNER ====================
+        function downloadCsvTemplate() {
+            const csvHeader = "title,brand,platform,date,views,reach,likes,comments,shares,saves\n";
+            const csvSample = "Review Lagu Akustik,Brand A,TikTok,2026-06-01,10000,8500,1200,150,90,200\n";
+            const blob = new Blob([csvHeader + csvSample], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'template_analytics_color_of_raven.csv';
+            a.click();
+            showToast('Template CSV berhasil diunduh!');
+        }
+
+        function exportAnalyticsCsv() {
+            if(analytics.length === 0) {
+                showToast('Tidak ada data analytics untuk diexport.');
+                return;
+            }
+            let csv = "title,brand,platform,date,views,reach,likes,comments,shares,saves\n";
+            analytics.forEach(i => {
+                csv += `"${i.title || ''}","${i.brand || ''}","${i.platform || ''}","${i.date || ''}",${i.views || 0},${i.reach || 0},${i.likes || 0},${i.comments || 0},${i.shares || 0},${i.saves || 0}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `analytics_export_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            showToast('Data analytics berhasil di-export ke CSV!');
+        }
+
+        function handleCsvImport(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const text = evt.target.result;
+                const lines = text.split('\n');
+                if(lines.length < 2) {
+                    showToast('Format CSV kosong atau tidak valid.');
+                    return;
+                }
+                let importedCount = 0;
+                for(let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if(!line) continue;
+                    const row = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || line.split(',');
+                    if(row.length >= 4) {
+                        const clean = row.map(val => val.replace(/^"|"$/g, '').trim());
+                        analytics.unshift({
+                            id: 'ana_' + Date.now() + '_' + i,
+                            postId: '',
+                            title: clean[0] || 'Imported Content',
+                            brand: clean[1] || 'General',
+                            platform: clean[2] || 'TikTok',
+                            date: clean[3] || new Date().toISOString().split('T')[0],
+                            views: parseInt(clean[4]) || 0,
+                            reach: parseInt(clean[5]) || 0,
+                            likes: parseInt(clean[6]) || 0,
+                            comments: parseInt(clean[7]) || 0,
+                            shares: parseInt(clean[8]) || 0,
+                            saves: parseInt(clean[9]) || 0
+                        });
+                        importedCount++;
+                    }
+                }
+                saveAnalytics();
+                populateAnalyticsFilters();
+                renderAnalytics();
+                renderSchedule();
+                showToast(`Berhasil import ${importedCount} data analytics dari CSV!`);
+                e.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        function openAiScannerModal() { document.getElementById('ai-scanner-modal').classList.remove('hidden'); }
+        function closeAiScannerModal() {
+            document.getElementById('ai-scanner-modal').classList.add('hidden');
+            document.getElementById('ai-screenshot-file').value = '';
+            document.getElementById('ai-scan-loading').classList.add('hidden');
+        }
+
+        async function processAiScreenshot() {
+            const fileInput = document.getElementById('ai-screenshot-file');
+            if(!fileInput.files || fileInput.files.length === 0) {
+                showToast('Pilih file screenshot terlebih dahulu.');
+                return;
+            }
+            const file = fileInput.files[0];
+            const loadingDiv = document.getElementById('ai-scan-loading');
+            loadingDiv.classList.remove('hidden');
+
+            const reader = new FileReader();
+            reader.onload = async function() {
+                const base64Data = reader.result.split(',')[1];
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+                const prompt = "Analyze this social media analytics screenshot. Extract the metrics into JSON format with keys: title (string), brand (string), platform (string), views (number), reach (number), likes (number), comments (number), shares (number), saves (number). Return ONLY valid JSON.";
+
+                const payload = {
+                    contents: [{
+                        role: "user",
+                        parts: [
+                            { text: prompt },
+                            { inlineData: { mimeType: file.type || "image/png", data: base64Data } }
+                        ]
+                    }],
+                    generationConfig: { responseMimeType: "application/json" }
+                };
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+                    const candidate = result.candidates?.[0];
+                    if(candidate && candidate.content?.parts?.[0]?.text) {
+                        const jsonText = candidate.content.parts[0].text;
+                        const parsed = JSON.parse(jsonText);
+
+                        analytics.unshift({
+                            id: 'ana_ai_' + Date.now(),
+                            postId: '',
+                            title: parsed.title || 'AI Scanned Content',
+                            brand: parsed.brand || 'Color of Raven',
+                            platform: parsed.platform || 'TikTok',
+                            date: new Date().toISOString().split('T')[0],
+                            views: parseInt(parsed.views) || 0,
+                            reach: parseInt(parsed.reach) || 0,
+                            likes: parseInt(parsed.likes) || 0,
+                            comments: parseInt(parsed.comments) || 0,
+                            shares: parseInt(parsed.shares) || 0,
+                            saves: parseInt(parsed.saves) || 0
+                        });
+
+                        saveAnalytics();
+                        populateAnalyticsFilters();
+                        renderAnalytics();
+                        renderSchedule();
+                        showToast('Berhasil membaca analytics dari screenshot via AI!');
+                        closeAiScannerModal();
+                    } else {
+                        showToast('Gagal membaca screenshot. Coba gambar lain.');
+                        loadingDiv.classList.add('hidden');
+                    }
+                } catch(err) {
+                    console.error(err);
+                    showToast('Terjadi kesalahan koneksi AI.');
+                    loadingDiv.classList.add('hidden');
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'bg-brown-950 border border-brown-900 text-amber-100 text-xs font-bold px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 transform transition-all duration-300 translate-y-[-10px] opacity-0';
+            toast.innerHTML = `<i class="fa-solid fa-circle-info text-amber-400"></i> ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.remove('translate-y-[-10px]', 'opacity-0'), 10);
+            setTimeout(() => { toast.classList.add('opacity-0'); setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+        window.onload = loadData;
+    </script>
+</body>
+</html>
